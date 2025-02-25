@@ -1,1 +1,245 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Δίλημμα Πίεσης από Συνομηλίκους</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&display=swap');
 
+        body {
+            font-family: 'Comfortaa', cursive;
+            text-align: center;
+            padding: 20px;
+            background-color: black;
+            color: white;
+        }
+        h1 {
+            font-size: 40px;
+            color: gold;
+            text-shadow: 0 0 10px gold, 0 0 20px gold;
+        }
+        .instructions {
+            font-size: 18px;
+            color: gold;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .player {
+            width: 23%;
+            border: 2px solid gold;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+        #player1 { background-color: rgba(255, 99, 71, 0.2); } /* Ντομάτα */
+        #player2 { background-color: rgba(0, 191, 255, 0.2); } /* Βαθύ Γαλάζιο */
+        #player3 { background-color: rgba(50, 205, 50, 0.2); } /* Λαχανί */
+        #player4 { background-color: rgba(147, 112, 219, 0.2); } /* Μωβ */
+        .scenario {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .choices button {
+            display: block;
+            margin: 5px auto;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: white;
+            color: black;
+            border: none;
+            font-family: 'Comfortaa', cursive;
+        }
+        .choices button:hover {
+            background-color: gray;
+        }
+        .score {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .flash {
+            font-size: 30px;
+            font-weight: bold;
+            color: limegreen;
+            text-shadow: 0 0 10px limegreen, 0 0 20px limegreen;
+            margin-top: 20px;
+        }
+        h2 {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>⚡ Η πίεση από συνομηλίκους μπορεί να οδηγήσει σε εκφοβισμό! ⚡</h1>
+    <div class="instructions">
+        🤝 Συνεργαστείτε με την ομάδα σας για να κάνετε σοφές επιλογές στα παρακάτω σενάρια. 🤝<br>
+        🏆 Όσο πιο σοφές είναι οι επιλογές σας, τόσο περισσότερους πόντους θα συγκεντρώσετε. 🏆<br>
+        🏅 Η ομάδα που θα συγκεντρώσει τους περισσότερους πόντους θα αναδειχθεί ως Αρχηγοί Διαμεσολαβητές του σχολείου μας! 🏅
+    </div>
+    <div class="container">
+        <div class="player" id="player1">
+            <h2>#ομάδα_ειρηνευτές ✌️</h2>
+            <div id="scenarios1"></div>
+            <div class="score" id="score1">Πόντοι: 0 🎯</div>
+        </div>
+        <div class="player" id="player2">
+            <h2>#ομάδα_εκδικητές 🦸</h2>
+            <div id="scenarios2"></div>
+            <div class="score" id="score2">Πόντοι: 0 🎯</div>
+        </div>
+        <div class="player" id="player3">
+            <h2>#ομάδα_προστάτες 🛡️</h2>
+            <div id="scenarios3"></div>
+            <div class="score" id="score3">Πόντοι: 0 🎯</div>
+        </div>
+        <div class="player" id="player4">
+            <h2>#ομάδα_διπλωμάτες 🕊️</h2>
+            <div id="scenarios4"></div>
+            <div class="score" id="score4">Πόντοι: 0 🎯</div>
+        </div>
+    </div>
+    <div id="flash" class="flash"></div>
+
+    <!-- Ηχητικό για τον νικητή -->
+    <audio id="winnerSound" src="winner.mp3"></audio>
+    
+    <script>
+        const playerScenarios = [
+            [
+                "Οι φίλοι σου σε πιέζουν να κλέψεις σε ένα τεστ. 🧠", 
+                "Κάποιος σε προκαλεί να κλέψεις από ένα μαγαζί. 🛍️", 
+                "Οι φίλοι σου κοροϊδεύουν κάποιον στο διαδίκτυο. 💻", 
+                "Βλέπεις έναν φίλο να εκφοβίζεται αλλά δεν λες τίποτα. 😶", 
+                "Η ομάδα σου σε πιέζει να κάνεις κοπάνα από το σχολείο. 🏫",
+                "Ένας συμμαθητής σε πιέζει να συμμετάσχεις στο πείραγμα κάποιου. 😒", 
+                "Οι φίλοι σου σε ενθαρρύνουν να παραβιάσεις τους κανόνες του σχολείου. 🚫", 
+                "Κάποιος σε πιέζει να πεις ψέματα σε έναν δάσκαλο. 🎓", 
+                "Οι συνομήλικοί σου σε προκαλούν να βανδαλίσεις σχολική περιουσία. 🎨", 
+                "Ένας φίλος σου ζητά να αποκλείσεις κάποιον από μια ομάδα. 🚷"
+            ],
+            [
+                "Σε ενθαρρύνουν να πεις ψέματα για να αποφύγεις πρόβλημα. 🤥", 
+                "Οι φίλοι σου θέλουν να διαδώσεις μια φήμη. 📢", 
+                "Κάποιος σου ζητά να οδηγήσεις χωρίς δίπλωμα. 🚗", 
+                "Σε πιέζουν να πιεις αλκοόλ. 🍺", 
+                "Βλέπεις κάποιον να αποκλείεται αλλά δεν κάνεις τίποτα. 🚶‍♂️",
+                "Ένας συνομήλικός σε πιέζει να κάνεις κοπάνα από ένα σημαντικό μάθημα. 📚", 
+                "Οι φίλοι σου σε ενθαρρύνουν να κοροϊδέψεις κάποιον. 😂", 
+                "Κάποιος σε πιέζει να καλύψεις το λάθος του. 🤫", 
+                "Η ομάδα σου σε προκαλεί να κάνεις φάρσα σε έναν δάσκαλο. 🎭", 
+                "Ένας φίλος σου ζητά να αγνοήσεις κάποιον που χρειάζεται βοήθεια. 🙈"
+            ],
+            [
+                "Σε πιέζουν να παλέψεις με κάποιον στο σχολείο. 👊", 
+                "Ένας φίλος σου ζητά να καλύψεις ένα λάθος. 🤫", 
+                "Οι συνομήλικοί σου σε πιέζουν να καπνίσεις. 🚬", 
+                "Κάποιος σε ενθαρρύνει να προσποιηθείς ότι είσαι άρρωστος. 🤒", 
+                "Βλέπεις κάποιον σε κίνδυνο αλλά διστάζεις να ενεργήσεις. ⚠️",
+                "Ένας συμμαθητής σε πιέζει να συμμετάσχεις στον εκφοβισμό κάποιου. 😠", 
+                "Οι φίλοι σου σε ενθαρρύνουν να σπάσεις μια υπόσχεση. 🤝", 
+                "Κάποιος σε πιέζει να κλέψεις σε ένα παιχνίδι. 🎲", 
+                "Οι συνομήλικοί σου σε προκαλούν να προσβάλεις έναν δάσκαλο. 👩‍🏫", 
+                "Ένας φίλος σου ζητά να διαδώσεις ψευδείς πληροφορίες. 📢"
+            ],
+            [
+                "Οι φίλοι σου θέλουν να βανδαλίσεις περιουσία. 🎨", 
+                "Κάποιος σε πιέζει να δώσεις τον κωδικό σου. 🔑", 
+                "Σε προκαλούν να προσβάλεις έναν δάσκαλο. 👩‍🏫", 
+                "Ένας φίλος σου ζητά να προδώσεις την εμπιστοσύνη κάποιου. 🤝", 
+                "Σε πιέζουν να παραβιάσεις έναν κανόνα του σχολείου. 📜",
+                "Ένας συνομήλικός σε πιέζει να συμμετάσχεις στην αποκλεισμό κάποιου. 🚷", 
+                "Οι φίλοι σου σε ενθαρρύνουν να κάνεις μια επιβλαβή πλάκα. 😂", 
+                "Κάποιος σε πιέζει να καλύψεις την κακή συμπεριφορά του. 🤫", 
+                "Η ομάδα σου σε προκαλεί να κάνεις κοπάνα από μια σημαντική εκδήλωση. 📅", 
+                "Ένας φίλος σου ζητά να πεις ψέματα στους γονείς σου. 🏠"
+            ]
+        ];
+
+        // Διαφορετικές παραλλαγές επιλογών για κάθε σενάριο
+        const choiceVariations = [
+            ["Σήκωσε αντιπολίτευση ✊", "Αρνήσου και φύγε 🚶‍♂️", "Πες όχι κατηγορηματικά 🚫", "Πάρε θέση και αντιτίθεσε 🛑"],
+            ["Πήγαινε μαζί τους 😬", "Συμφώνησε με δισταγμό 😕", "Ακολούθησε το πλήθος 🐑", "Υποχώρησε στην πίεση 👐"],
+            ["Αναφέρετέ το 🚨", "Ενημέρωσε μια αρχή 🗣️", "Πες το σε έναν δάσκαλο 👩‍🏫", "Ζήτησε βοήθεια από έναν ενήλικα 🆘"],
+            ["Αγνόησέ το 🙈", "Προσποίησου ότι δεν συνέβη 🤐", "Απέφυγε να εμπλακείς 🚷", "Κλείσε τα μάτια σου 🙉"]
+        ];
+
+        const scores = [10, -5, 5, 0]; // Πόντοι για κάθε τύπο επιλογής
+        let playerScores = [0, 0, 0, 0];
+        let scenarioIndexes = [0, 0, 0, 0];
+        
+        function loadScenario(player) {
+            let scenariosDiv = document.getElementById(`scenarios${player+1}`);
+            scenariosDiv.innerHTML = "";
+            if (scenarioIndexes[player] < playerScenarios[player].length) {
+                let scenarioDiv = document.createElement("div");
+                scenarioDiv.classList.add("scenario");
+                scenarioDiv.textContent = "📜 " + playerScenarios[player][scenarioIndexes[player]];
+                
+                let choiceDiv = document.createElement("div");
+                choiceDiv.classList.add("choices");
+
+                // Ανακάτεμα των επιλογών για κάθε σενάριο
+                let shuffledChoices = shuffleArray([...choiceVariations]);
+                shuffledChoices.forEach((choiceSet, index) => {
+                    let button = document.createElement("button");
+                    button.textContent = choiceSet[Math.floor(Math.random() * choiceSet.length)]; // Τυχαία επιλογή μιας παραλλαγής
+                    button.onclick = () => choose(player, index, scenarioDiv);
+                    choiceDiv.appendChild(button);
+                });
+                scenariosDiv.appendChild(scenarioDiv);
+                scenariosDiv.appendChild(choiceDiv);
+            } else {
+                scenariosDiv.innerHTML = "<div class='scenario'>🎉 Δεν υπάρχουν άλλα σενάρια! 🎉</div>";
+            }
+        }
+        
+        function choose(player, option, scenarioDiv) {
+            playerScores[player] += scores[option];
+            document.getElementById(`score${player+1}`).textContent = `Πόντοι: ${playerScores[player]} 🎯`;
+            scenarioDiv.style.display = "none";
+            scenarioIndexes[player]++;
+            loadScenario(player);
+            checkEnd();
+        }
+        
+        function checkEnd() {
+            if (scenarioIndexes.every(index => index >= playerScenarios[0].length)) {
+                let maxScore = Math.max(...playerScores);
+                let winningTeams = [];
+                playerScores.forEach((score, index) => {
+                    if (score === maxScore) {
+                        winningTeams.push(index);
+                    }
+                });
+                let teamNames = ["#ομάδα_ειρηνευτές ✌️", "#ομάδα_εκδικητές 🦸", "#ομάδα_προστάτες 🛡️", "#ομάδα_διπλωμάτες 🕊️"];
+                let winners = winningTeams.map(team => teamNames[team]).join(", ");
+                document.getElementById("flash").innerHTML = `🎉🎉 Συγχαρητήρια ${winners}! Είστε πλέον οι Αρχηγοί Διαμεσολαβητές του σχολείου! 🎉🎉`;
+                
+                // Αναπαραγωγή του ήχου νίκης
+                let winnerSound = document.getElementById("winnerSound");
+                winnerSound.play();
+            }
+        }
+
+        // Βοηθητική συνάρτηση για ανακάτεμα ενός πίνακα
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        for (let i = 0; i < 4; i++) {
+            loadScenario(i);
+        }
+    </script>
+</body>
+</html>
